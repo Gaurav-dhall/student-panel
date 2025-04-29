@@ -2,10 +2,40 @@ import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ChevronLeft, Facebook, Instagram, Linkedin, Twitter } from "lucide-react"
-import { students } from "@/lib/data"
 
-export default function StudentDetail({ params }: { params: { id: string } }) {
-  const student = students.find((s) => s.id === params.id)
+interface Student {
+  _id: string
+  name: string
+  studentPhoto?: string
+  enrollmentNo?: string
+  department?: string
+  batch?: string
+  contactNumber?: string
+  category?: string
+  description?: string
+  socialMedia?: {
+    facebook?: string
+    twitter?: string
+    instagram?: string
+    linkedin?: string
+  }
+  uploadedMedia?: string[]
+}
+
+export default async function StudentDetail({ params }: { params: { id: string } }) {
+  // Use an absolute URL. Fallback to localhost if NEXT_PUBLIC_BASE_URL is not set.
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  const res = await fetch(`${baseUrl}/api/posts/${params.id}`, { 
+    // Ensure fresh data on each request 
+    next: { revalidate: 0 } 
+  })
+  
+  if (!res.ok) {
+    notFound()
+  }
+  
+  const json = await res.json()
+  const student: Student = json.data
 
   if (!student) {
     notFound()
@@ -21,7 +51,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
       <div className="bg-white rounded-xl shadow-md overflow-hidden border border-blue-100">
         <div className="relative h-64 w-full">
           <Image
-            src={student.profileImage || "/placeholder.svg"}
+            src={student.studentPhoto || "/placeholder.svg"}
             alt={student.name}
             fill
             className="object-cover"
@@ -32,7 +62,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
         <div className="p-8">
           <div className="mb-6">
             <h1 className="text-3xl font-bold text-blue-800">{student.name}</h1>
-            <p className="text-blue-600 text-lg">{student.enrollmentNumber}</p>
+            <p className="text-blue-600 text-lg">{student.enrollmentNo}</p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -62,7 +92,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
               <div>
                 <h2 className="text-xl font-semibold text-blue-700 mb-2">Social Media</h2>
                 <div className="flex gap-4">
-                  {student.socialMedia.facebook && (
+                  {student.socialMedia?.facebook && (
                     <a
                       href={student.socialMedia.facebook}
                       target="_blank"
@@ -73,7 +103,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                       <span className="sr-only">Facebook</span>
                     </a>
                   )}
-                  {student.socialMedia.twitter && (
+                  {student.socialMedia?.twitter && (
                     <a
                       href={student.socialMedia.twitter}
                       target="_blank"
@@ -84,7 +114,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                       <span className="sr-only">Twitter</span>
                     </a>
                   )}
-                  {student.socialMedia.instagram && (
+                  {student.socialMedia?.instagram && (
                     <a
                       href={student.socialMedia.instagram}
                       target="_blank"
@@ -95,7 +125,7 @@ export default function StudentDetail({ params }: { params: { id: string } }) {
                       <span className="sr-only">Instagram</span>
                     </a>
                   )}
-                  {student.socialMedia.linkedin && (
+                  {student.socialMedia?.linkedin && (
                     <a
                       href={student.socialMedia.linkedin}
                       target="_blank"
