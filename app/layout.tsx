@@ -2,13 +2,14 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Student Panel",
-  description: "A clean student panel UI",
-    generator: 'MAIT'
+  title: "IT Department - Student Showcase",
+  description: "Explore extracurricular activities and achievements from our talented IT students",
+    generator: 'v0.dev'
 }
 
 export default function RootLayout({
@@ -17,15 +18,13 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-white min-h-screen`}>
-        <header className="bg-blue-700 text-white py-4">
-          <div className="container mx-auto px-4">
-            <h1 className="text-2xl font-bold">University Student Panel</h1>
-          </div>
-        </header>
-        {children}
+    <html lang="en" suppressHydrationWarning>
+      <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   )
 }
+

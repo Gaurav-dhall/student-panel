@@ -1,3 +1,6 @@
+// this route is currently not in use we have used a modal instead in postGrid component 
+
+
 import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -24,8 +27,9 @@ interface Student {
 
 export default async function StudentDetail({ params }: { params: { id: string } }) {
   // Use an absolute URL. Fallback to localhost if NEXT_PUBLIC_BASE_URL is not set.
+  const postId = await params.id
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
-  const res = await fetch(`${baseUrl}/api/posts/${params.id}`, { 
+  const res = await fetch(`${baseUrl}/api/posts/${postId}`, { 
     // Ensure fresh data on each request 
     next: { revalidate: 0 } 
   })
