@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { motion } from "framer-motion"
 import { ExternalLink, Github, Instagram, Linkedin, Facebook, Youtube } from "lucide-react"
@@ -204,20 +204,54 @@ interface PostCardProps {
 
 function PostCard({ post, onClick }: PostCardProps) {
   const [isHovered, setIsHovered] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  const handleMouseEnter = () => {
+    if (!isMobile) {
+      setIsHovered(true)
+      if (videoRef.current) {
+        setTimeout(() => {
+          if (videoRef.current) {
+            videoRef.current.play()
+          }
+        }, 1000)
+      }
+    }
+  }
+
+  const handleMouseLeave = () => {
+    if (!isMobile) {
+      setIsHovered(false)
+      if (videoRef.current) {
+        videoRef.current.pause()
+        videoRef.current.currentTime = 0
+        videoRef.current.load()
+      }
+    }
+  }
 
   return (
     <motion.div
       className="relative overflow-hidden rounded-lg cursor-pointer group"
-      whileHover={{ scale: 1.03 }}
+      whileHover={!isMobile ? { scale: 1.03 } : {}}
       transition={{ duration: 0.2 }}
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={onClick}
     >
       <div className="aspect-[3/4] relative overflow-hidden">
         {post.talentMedia && post.talentMedia.length > 0 && post.talentMedia[0].secure_url ? (
           isImage(post.talentMedia[0].secure_url) ? (
-            // Agar pehla media image hai toh Image tag use karo
             <Image
               src={post.talentMedia[0].secure_url}
               alt={post.postTitle}
@@ -225,33 +259,29 @@ function PostCard({ post, onClick }: PostCardProps) {
               className="object-cover transition-transform duration-300 group-hover:scale-110"
             />
           ) : (
-            // Agar pehla media video hai toh video tag use karo
             <video
+              ref={videoRef}
               src={post.talentMedia[0].secure_url}
-
               loop
               muted
-              // Grid view mein controls off rakhte hain, modal mein dikhenge
+              playsInline
               controls={false}
-              autoPlay={true}
+              autoPlay={isMobile ? true : false}
+              preload="auto"
               width={800}
               height={600}
-              // Video ko bhi cover karna hai container mein
+              poster={(post.talentMedia.find(media => isImage(media.secure_url))?.secure_url || "/placeholder.svg?height=600&width=800&text=Video+Preview")}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-              // Video ke liye poster image
-              // poster="/placeholder.svg?height=600&width=800&text=Video+Preview"
-              // Error handling agar video load na ho
               onError={(e) => {
                 const target = e.target as HTMLVideoElement
-                target.onerror = null // Prevent infinite loops
-                target.poster = "/placeholder.svg?height=600&width=800&text=Video+Unavailable" // Show error poster
+                target.onerror = null
+                target.poster = "/placeholder.svg?height=600&width=800&text=Video+Unavailable"
               }}
             >
               Your browser does not support the video tag.
             </video>
           )
         ) : (
-          // Agar koi media nahi hai toh placeholder image dikhao
           <Image
             src="/placeholder.svg"
             alt="No media available"
@@ -260,11 +290,10 @@ function PostCard({ post, onClick }: PostCardProps) {
           />
         )}
 
-        {/* Overlay that appears on hover */}
         <motion.div
           className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-transparent p-4 flex flex-col justify-end"
           initial={{ opacity: 0 }}
-          animate={{ opacity: isHovered ? 1 : 0 }}
+          animate={{ opacity: isMobile || isHovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
         >
           <Badge className="self-start mb-2 bg-accent text-white hover:bg-accent/90">{post.category}</Badge>

@@ -1,6 +1,6 @@
 import Link from "next/link"
 import Image from "next/image"
-import { MoonIcon, SunIcon } from "lucide-react"
+import { MoonIcon, SunIcon, Bell } from "lucide-react"
 import { connectDB } from "@/dbConfig/db"
 import Post from "@/models/post"  // importing the model from /models/post.ts
 import { Button } from "@/components/ui/button"
@@ -71,43 +71,34 @@ export default async function Home() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen h- flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-around">
-          <a href="https://www.mait.ac.in/" className="flex items-center gap-2 cursor-pointer" target="_blank" rel="noopener noreferrer">
-            <Image
-              src="/MaitLogoNew.png"
-              alt="IT Department Logo"
-              width={75}
-              height={75}
-              className="rounded text-primary dark:text-white"
-            />
-            {/* <span className="text-lg font-bold text-primary dark:text-white">IT Department</span> */}
-          </a>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm">
-            <Link href="/" className="font-medium transition-colors hover:text-primary">
-              Home
-            </Link>
-            <Link href="#" className="font-medium text-muted-foreground transition-colors hover:text-primary">
-              About
-            </Link>
-            <Link href="#" className="font-medium text-muted-foreground transition-colors hover:text-primary">
-              Contact
-            </Link>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <ModeToggle />
-            <Button variant="outline" size="icon" className="md:hidden">
-              <SunIcon className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-              <MoonIcon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-          </div>
-        </div>
-      </header>
+<header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <div className="container flex h-16 items-center justify-center px-6 relative">
+    <a href="https://www.mait.ac.in/" className="flex items-center gap-3 cursor-pointer group" target="_blank" rel="noopener noreferrer">
+      <div className="relative">
+        <Image
+          src="/MaitLogoNew.png"
+          alt="IT Department Logo"
+          width={65}
+          height={65}
+          className="rounded text-primary dark:text-white transition-transform group-hover:scale-105"
+        />
+        <div className="absolute -top-1 -right-1 h-3 w-3 bg-green-500 rounded-full animate-pulse"></div>
+      </div>
+      <div>
+        <h1 className="text-lg font-bold text-primary dark:text-white group-hover:text-primary/80 transition-colors">
+          IT Department Talent Portal
+        </h1>
+        <p className="text-xs text-muted-foreground">Showcasing Our Creative Side</p>
+      </div>
+    </a>
+    
+    {/* Floating notification badge */}
+   
+  </div>
+</header>
 
       {/* Hero Section */}
       <section className="w-full py-12 md:py-24 lg:py-32 relative">
@@ -137,13 +128,15 @@ export default async function Home() {
         <PostGrid posts={posts} />
       </section>
 
+      
+
       {/* Footer */}
       <footer className="w-full border-t bg-background px-12 py-6 mt-auto">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex flex-col items-center md:items-start gap-2">
             <div className="flex items-center gap-2">
             <a href="https://www.mait.ac.in/" className="flex items-center gap-2 cursor-pointer" target="_blank" rel="noopener noreferrer">
-              <Image src="/MaitLogo.png" alt="IT Department Logo" width={150} height={150} className="rounded" />
+              <Image src="/MaitLogoNew.png" alt="IT Department Logo" width={75} height={75} className="rounded" />
               </a>
               {/* <span className="text-lg font-semibold">IT Department</span> */}
             </div>
